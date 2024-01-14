@@ -57,12 +57,33 @@ class BigMonster extends Character{
   }
 }
 
+class Log{
+  list =[];
+
+  constructor(logEl){
+    this.logEl = logEl;
+  }
+
+  addMessage(msg){
+    this.list.push(msg);
+    this.render();
+  }
+
+  render(){
+    this.logEl.innerHTML = "";
+    for (let i in this.list){
+      this.logEl.innerHTML += `<li>${this.list[i]}</li><hr>`;
+    }
+  }
+}
+
 class Stage{
-  constructor(fighter01, fighter02, fighter01El, fighter02El){
+  constructor(fighter01, fighter02, fighter01El, fighter02El, logObject){
     this.fighter01 = fighter01;
     this.fighter02 = fighter02;
     this.fighter01El = fighter01El;
     this.fighter02El = fighter02El;
+    this.log = logObject;
   }
 
   start(){
@@ -94,34 +115,40 @@ class Stage{
   doAttack(attacking, attacked){
     let attackDiced = (Math.floor(Math.random() *7) + 1) * attacking.attack;
     let defenceDiced = (Math.floor(Math.random() *7) + 1) * attacked.defence;
-    const logArea = document.querySelector(".log_area");
-    const logAreaParagraph01 = document.createElement("p");
-    const text01 = document.createTextNode(`${attacking.name} is attacking ${attacked.name}`);
-    logAreaParagraph01.appendChild(text01);
-    const logAreaParagraph02 = document.createElement("p");
-    const text02 = document.createTextNode(`${attacking.name}'s attack strength was ${attackDiced} against ${attacked.name}'s defense strength of ${defenceDiced}`);
-    logAreaParagraph02.appendChild(text02);
-    const logAreaParagraph03 = document.createElement("p");
-    const text03 = document.createTextNode(`${attacking.name} managed to attack ${attacked.name}`);
-    logAreaParagraph03.appendChild(text03);
-    const logAreaParagraph04 = document.createElement("p");
-    const text04 = document.createTextNode(`${attacked.name} managed to defend himself from ${attacking.name}`);
-    logAreaParagraph04.appendChild(text04);
-    const logAreaLine = document.createElement("hr");
+    // const logArea = document.querySelector(".log_area");
+    // const logAreaParagraph01 = document.createElement("p");
+    // const text01 = document.createTextNode(`${attacking.name} is attacking ${attacked.name}`);
+    // logAreaParagraph01.appendChild(text01);
+    // const logAreaParagraph02 = document.createElement("p");
+    // const text02 = document.createTextNode(`${attacking.name}'s attack strength was ${attackDiced} against ${attacked.name}'s defense strength of ${defenceDiced}`);
+    // logAreaParagraph02.appendChild(text02);
+    // const logAreaParagraph03 = document.createElement("p");
+    // const text03 = document.createTextNode(`${attacking.name} managed to attack ${attacked.name}`);
+    // logAreaParagraph03.appendChild(text03);
+    // const logAreaParagraph04 = document.createElement("p");
+    // const text04 = document.createTextNode(`${attacked.name} managed to defend himself from ${attacking.name}`);
+    // logAreaParagraph04.appendChild(text04);
+    // const logAreaLine = document.createElement("hr");
+
     if (attacking.life <= 0 || attacked.life <= 0){
-      logArea.innerHTML = '<p>The game is over</p>';
+      // logArea.innerHTML = '<p>The game is over</p>';
+      this.log.addMessage('The game is over');
       return;
     };
-    logArea.appendChild(logAreaParagraph01);
-    logArea.appendChild(logAreaParagraph02);
-    logArea.appendChild(logAreaLine);
+    this.log.addMessage(`${attacking.name} is attacking ${attacked.name}`);
+    this.log.addMessage(`${attacking.name}'s attack strength was ${attackDiced} against ${attacked.name}'s defense strength of ${defenceDiced}`);
+    // logArea.appendChild(logAreaParagraph01);
+    // logArea.appendChild(logAreaParagraph02);
+    // logArea.appendChild(logAreaLine);
     if (attackDiced > defenceDiced){
-      logArea.appendChild(logAreaParagraph03);
-      logArea.appendChild(logAreaLine);
+      // logArea.appendChild(logAreaParagraph03);
+      this.log.addMessage(`${attacking.name} managed to attack ${attacked.name}`);
+      // logArea.appendChild(logAreaLine);
       attacked.life = attacked.life - (attackDiced - defenceDiced);
     } else{
-      logArea.appendChild(logAreaParagraph04);
-      logArea.appendChild(logAreaLine);
+      // logArea.appendChild(logAreaParagraph04);
+      this.log.addMessage(`${attacked.name} managed to defend himself from ${attacking.name}`);
+      // logArea.appendChild(logAreaLine);
       attacking.life = attacking.life - (defenceDiced - attackDiced);
     }
     this.update();
